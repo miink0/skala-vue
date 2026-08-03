@@ -8,7 +8,13 @@ const weatherList = ref([
 ])
 
 const searchQuery = ref('')
+const selectedCityName = ref('')
 const selectedCityInfo = ref('카드를 클릭하거나 검색해 보세요.')
+
+const selectCity = (name) => {
+  selectedCityName.value = name
+  selectedCityInfo.value = '이 선택되었습니다.'
+}
 
 const filteredWeatherList = computed(() => {
   const query = searchQuery.value.trim()
@@ -54,29 +60,39 @@ const ShowDetail = (cityName, status) => {
         v-for="item in filteredWeatherList"
         :key="item.id"
         class="weather-card"
-        @click="selectedCityInfo = `${item.name}이 선택되었습니다.`"
+        @click="selectCity(item.name)"
       >
-        <h4>{{ item.name }} ({{ item.status }})</h4>
-        <p>현재 기온: {{ item.temp }}°C</p>
+        <div class="card-row">
+          <div class="city-name">{{ item.name }}</div>
+          <div class="temp">{{ item.temp }}°C</div>
+        </div>
 
-        <span v-if="item.temp >= 25" class="badge hot">더움 (25도 이상)</span>
-        <span v-else class="badge cool">선선함 (25도 미만)</span>
+        <div class="meta">
+          <span v-if="item.temp >= 25" class="badge hot">더움 (25도 이상)</span>
+          <span v-else class="badge cool">선선함 (25도 미만)</span>
+        </div>
 
         <button class="btn-detail" @click.stop="ShowDetail(item.name, item.status)">
           상세보기
         </button>
-
-        <p
-          v-if="filteredWeatherList.length === 0"
-          style="text-align: center; color: red; margin-top: 10px"
-        >
-          검색 결과가 없습니다.
-        </p>
       </div>
+
+      <p
+        v-if="filteredWeatherList.length === 0"
+        style="text-align: center; color: red; margin-top: 10px"
+      >
+        검색 결과가 없습니다.
+      </p>
     </section>
 
     <div class="status-bar">
-      {{ selectedCityInfo }}
+      <template v-if="selectedCityName">
+        <span class="selected-city">{{ selectedCityName }}</span>
+        <span class="selected-text">{{ selectedCityInfo }}</span>
+      </template>
+      <template v-else>
+        {{ selectedCityInfo }}
+      </template>
     </div>
   </div>
 </template>

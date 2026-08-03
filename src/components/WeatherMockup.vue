@@ -39,11 +39,15 @@ const showDetail = (cityName, status) => {
         class="weather-card"
         @click="selectedCityInfo = `${item.name}이 선택되었습니다.`"
       >
-        <h4>{{ item.name }} ({{ item.status }})</h4>
-        <p>현재 기온: {{ item.temp }}°C</p>
+        <div class="card-row">
+          <div class="city-name">{{ item.name }}</div>
+          <div class="temp">{{ item.temp }}°C</div>
+        </div>
 
-        <span v-if="item.temp >= 25" class="badge hot">더움 (25도 이상)</span>
-        <span v-else class="badge cool">선선함 (25도 미만)</span>
+        <div class="meta">
+          <span v-if="item.temp >= 25" class="badge hot">더움 (25도 이상)</span>
+          <span v-else class="badge cool">선선함 (25도 미만)</span>
+        </div>
 
         <button class="btn-detail" @click.stop="showDetail(item.name, item.status)">
           상세보기
