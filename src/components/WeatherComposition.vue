@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, watch, watchEffect } from 'vue'
 
 const weatherList = ref([
   { id: 'city_01', name: '서울', temp: 28, status: '맑음' },
@@ -10,7 +10,24 @@ const weatherList = ref([
 const searchQuery = ref('')
 const selectedCityInfo = ref('카드를 클릭하거나 검색해 보세요.')
 
-const showDetail = (cityName, status) => {
+const filteredWeatherList = computed(() => {
+  const query = searchQuery.value.trim()
+
+  if (!query) {
+    return weatherList.value
+  }
+  return weatherList.value.filter((item) => item.name.includes(query))
+})
+
+watch(selectedCityInfo, (newValue) => {
+  console.log('선택된 도시 정보:', newValue)
+})
+
+watchEffect(() => {
+  console.log('검색어:', searchQuery.value)
+})
+
+const ShowDetail = (cityName, status) => {
   window.alert(`${cityName}의 현재 날씨는 [${status}] 상태입니다.`)
 }
 </script>
@@ -34,7 +51,7 @@ const showDetail = (cityName, status) => {
       <h3>지역별 날씨 현황</h3>
 
       <div
-        v-for="item in weatherList"
+        v-for="item in filteredWeatherList"
         :key="item.id"
         class="weather-card"
         @click="selectedCityInfo = `${item.name}이 선택되었습니다.`"
@@ -45,9 +62,16 @@ const showDetail = (cityName, status) => {
         <span v-if="item.temp >= 25" class="badge hot">더움 (25도 이상)</span>
         <span v-else class="badge cool">선선함 (25도 미만)</span>
 
-        <button class="btn-detail" @click.stop="showDetail(item.name, item.status)">
+        <button class="btn-detail" @click.stop="ShowDetail(item.name, item.status)">
           상세보기
         </button>
+
+        <p
+          v-if="filteredWeatherList.length === 0"
+          style="text-align: center; color: red; margin-top: 10px"
+        >
+          검색 결과가 없습니다.
+        </p>
       </div>
     </section>
 
