@@ -20,6 +20,11 @@ import ThemeBackground from './components/ThemeBackground.vue'
       <hr />
       <WeatherParent />
     </div>
+    <div class="app-container">
+      <h1>⛅ 과제 4: 날씨 Router 활용</h1>
+      <hr />
+      <WeatherParent />
+    </div>
   </ThemeBackground>
 </template>
 
