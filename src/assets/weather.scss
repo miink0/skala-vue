@@ -85,6 +85,9 @@ $cool-text: #273780;
 .weather-card {
   border: 1px solid $border-color;
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
   border-radius: 14px;
   padding: 16px 56px 16px 16px;
   transition:
@@ -95,6 +98,18 @@ $cool-text: #273780;
 .weather-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 18px rgba(44, 62, 80, 0.12);
+}
+
+.weather-icon {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  object-fit: contain;
+}
+
+.card-content {
+  min-width: 0;
+  flex: 1;
 }
 
 .card-row {
@@ -112,7 +127,7 @@ $cool-text: #273780;
 .card-row .temp {
   font-size: 16px;
   font-weight: 600;
-  color: $accent-dark;
+  color: $accent;
 }
 
 .meta {

@@ -23,15 +23,18 @@ const displayTemp = computed(() => {
 
 <template>
   <article class="weather-card" @click="emit('select-card', item.name)">
-    <div class="card-row">
-      <div class="city-name">{{ item.name }}</div>
-      <div class="temp">{{ item.temp }}°C</div>
-      <div class="temp">현재 기온: {{ displayTemp }}{{ configStore.unitSymbol }}</div>
-    </div>
+    <img v-if="item.iconUrl" class="weather-icon" :src="item.iconUrl" :alt="item.iconAlt || item.status" />
 
-    <div class="meta">
-      <span v-if="item.temp >= 25" class="badge hot">더움 (25도 이상)</span>
-      <span v-else class="badge cool">선선함 (25도 미만)</span>
+    <div class="card-content">
+      <div class="card-row">
+        <div class="city-name">{{ item.name }}</div>
+        <div class="temp">{{ displayTemp }}{{ configStore.unitSymbol }}</div>
+      </div>
+
+      <div class="meta">
+        <span v-if="item.temp >= 25" class="badge hot">더움 (25도 이상)</span>
+        <span v-else class="badge cool">선선함 (25도 미만)</span>
+      </div>
     </div>
 
     <button class="btn-detail" @click.stop="emit('click-detail', item.id)">상세보기</button>

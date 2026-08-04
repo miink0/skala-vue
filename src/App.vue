@@ -6,7 +6,7 @@ import UnitToggler from './components/UnitToggler.vue'
 <template>
   <ThemeBackground>
     <div class="app-container">
-      <h1>과제 4: 날씨 Router 활용</h1>
+      <h1>과제 6: Axios 활용</h1>
       <nav class="navigation-bar">
         <RouterLink to="/" class="nav-item"> 날씨 대시보드 </RouterLink>
         <span class="nav-separator"> | </span>
