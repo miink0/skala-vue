@@ -1,5 +1,6 @@
 <script setup>
 import ThemeBackground from './components/ThemeBackground.vue'
+import UnitToggler from './components/UnitToggler.vue'
 </script>
 
 <template>
@@ -10,6 +11,7 @@ import ThemeBackground from './components/ThemeBackground.vue'
         <RouterLink to="/" class="nav-item"> 날씨 대시보드 </RouterLink>
         <span class="nav-separator"> | </span>
         <RouterLink to="/about" class="nav-item"> 날씨 프로젝트 소개 </RouterLink>
+        <UnitToggler />
       </nav>
       <main>
         <RouterView />

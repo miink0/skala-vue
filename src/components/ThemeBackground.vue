@@ -54,10 +54,10 @@ const toggleMode = () => {
   gap: 5px;
   padding: 0.75rem 1rem;
   font-size: 1rem;
-  border-radius: 999px;
+  border-radius: 50px;
   outline: none;
   border-color: #77a079;
-  box-shadow: 0 0 0 3px rgba(119, 160, 121, 0.15);
+  box-shadow: 0 0 0 3px rgba(119, 159, 121, 0.15);
   transition:
     background 0.25s ease,
     transform 0.2s ease;

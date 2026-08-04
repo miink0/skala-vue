@@ -1,10 +1,12 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDashboardCard from '@/components/BaseDashboardCard.vue'
+import { useConfigStore } from '@/stores/configStore'
 
 const route = useRoute()
 const router = useRouter()
+const configStore = useConfigStore()
 
 const MockDetails = {
   city_01: {
@@ -30,6 +32,16 @@ const MockDetails = {
   },
 }
 
+// 상세페이지에서도 화씨 <-> 섭씨 변환을 적용하기 위해 computed 사용
+const displayTemp = computed(() => {
+  if (!cityData.value) return 0
+  const rawTemp = cityData.value.temp // 원본 섭씨 온도
+  if (configStore.unit === 'fahrenheit') {
+    return Math.round((rawTemp * 9) / 5 + 32) // 화씨 공식 적용
+  }
+  return rawTemp // celsius 상태일 땐 원본 반환
+})
+
 const cityData = ref(null)
 
 onMounted(() => {
@@ -48,7 +60,9 @@ onMounted(() => {
       <h2>날씨 상세 정보</h2>
       <div v-if="cityData">
         <p>도시: {{ cityData.name }}</p>
-        <p>온도: {{ cityData.temp }}°C</p>
+        <p>
+          온도: <strong> {{ displayTemp }}{{ configStore.unitSymbol }} </strong>
+        </p>
         <p>상태: {{ cityData.status }}</p>
         <p>습도: {{ cityData.humidity }}</p>
         <p>풍속: {{ cityData.wind }}</p>
