@@ -42,7 +42,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="detail=container">
+  <div class="detail-container">
     <h2>날씨 상세 정보</h2>
     <div v-if="cityData">
       <p>도시: {{ cityData.name }}</p>
@@ -57,3 +57,40 @@ onMounted(() => {
     <button @click="router.push('/')" class="back-btn">← 메인 대시보드로 돌아가기</button>
   </div>
 </template>
+
+<style scoped>
+.detail-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 28px;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(44, 62, 80, 0.08);
+}
+
+.detail-container h2 {
+  margin-top: 0;
+  margin-bottom: 18px;
+  color: #203739;
+}
+
+.detail-container p {
+  margin: 10px 0;
+  color: #4d5d61;
+  line-height: 1.6;
+}
+
+.back-btn {
+  margin-top: 18px;
+  border: none;
+  border-radius: 18px;
+  padding: 12px 18px;
+  background: #bcd1c1;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  background: #a1b7ab;
+}
+</style>
