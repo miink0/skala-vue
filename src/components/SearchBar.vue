@@ -16,11 +16,33 @@ const emit = defineEmits(['update-query'])
     <p>
       검색 중인 도시: <strong>{{ searchQuery }}</strong>
     </p>
-    <input
-      type="text"
-      :value="searchQuery"
-      @input="(e) => emit('update-query', e.target.value)"
-      placeholder="검색할 도시 이름 입력"
-    />
+    <div class="input-wrapper with-icon">
+      <font-awesome-icon class="search-icon" :icon="['fas', 'magnifying-glass']" />
+      <input
+        type="text"
+        :value="searchQuery"
+        @input="(e) => emit('update-query', e.target.value)"
+        placeholder="검색할 도시 이름 입력"
+      />
+    </div>
   </section>
 </template>
+
+<style scoped>
+.input-wrapper {
+  position: relative;
+}
+
+.input-wrapper.with-icon input {
+  padding-left: 42px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #7a9f8c;
+  font-size: 18px;
+}
+</style>

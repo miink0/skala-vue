@@ -173,3 +173,61 @@ $cool-text: #273780;
   margin-left: 15px;
   background: rgba(188, 209, 193, 0.16);
 }
+
+.view-panel {
+  background: $panel-bg;
+  border-radius: 24px;
+  box-shadow: 0 12px 30px $panel-shadow;
+  padding: 28px;
+}
+
+.view-panel .search-box,
+.view-panel .list-box,
+.view-panel .status-bar {
+  background: $panel-bg;
+}
+
+.back-btn {
+  margin-top: 20px;
+  border: none;
+  border-radius: 18px;
+  padding: 12px 18px;
+  background: $accent;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.back-btn:hover {
+  background: $accent-dark;
+}
+
+// 네비게이션 바
+.navigation-bar {
+  display: flex;
+  // flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.nav-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 15px;
+  border-radius: 8px;
+  background: #ffffff;
+  color: $text-dark;
+  font-weight: 600;
+  transition: background 0.2s ease;
+  box-shadow: 0 12px 30px $panel-shadow;
+}
+
+.nav-item:hover {
+  background: $accent;
+  color: #ffffff;
+}
+
+.nav-separator {
+  color: #434b43;
+}

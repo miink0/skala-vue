@@ -1,12 +1,11 @@
 <script setup>
-const props = defineProps({
+defineProps({
   item: {
     type: Object,
     required: true,
   },
 })
 
-const { item } = props
 const emit = defineEmits(['select-card', 'click-detail'])
 </script>
 
@@ -22,8 +21,6 @@ const emit = defineEmits(['select-card', 'click-detail'])
       <span v-else class="badge cool">선선함 (25도 미만)</span>
     </div>
 
-    <button class="btn-detail" @click.stop="emit('click-detail', item.name, item.status)">
-      상세보기
-    </button>
+    <button class="btn-detail" @click.stop="emit('click-detail', item.id)">상세보기</button>
   </article>
 </template>
