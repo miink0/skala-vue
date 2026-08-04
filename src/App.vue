@@ -1,6 +1,7 @@
 <script setup>
 import WeatherMockup from './components/WeatherMockup.vue'
 import WeatherComposition from './components/WeatherComposition.vue'
+import WeatherParent from './components/WeatherParent.vue'
 import ThemeBackground from './components/ThemeBackground.vue'
 </script>
 
@@ -13,6 +14,11 @@ import ThemeBackground from './components/ThemeBackground.vue'
     <div class="app-container">
       <h1>과제 2: 날씨 (컴포지션)</h1>
       <WeatherComposition />
+    </div>
+    <div class="app-container">
+      <h1>⛅ 과제 3: 날씨 (컴포넌트)</h1>
+      <hr />
+      <WeatherParent />
     </div>
   </ThemeBackground>
 </template>
