@@ -1,23 +1,32 @@
 <script setup>
-import { onBeforeUnmount, onMounted, ref, watch, defineProps } from 'vue'
-const props = defineProps({
-  catType: {
-    type: String,
-    default: 'walking_cat1',
-  },
-})
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+
+const selectedCat = ref('walking_cat1')
+const isCatPaused = ref(false)
 const catRef = ref(null)
 const catGif = ref(new URL('../assets/walking_cat1.gif', import.meta.url).href)
 
+const catOptions = [
+  { value: 'walking_cat1', label: '검은 고양이' },
+  { value: 'walking_cat3', label: '무지개 고양이' },
+  { value: 'whale', label: '고래' },
+  { value: 'none', label: '동물 없음' },
+]
+
 const catMap = {
   walking_cat1: new URL('../assets/walking_cat1.gif', import.meta.url).href,
-  walking_cat2: new URL('../assets/walking_cat2.gif', import.meta.url).href,
+  whale: new URL('../assets/whale.gif', import.meta.url).href,
   walking_cat3: new URL('../assets/walking_cat3.gif', import.meta.url).href,
 }
 
 watch(
-  () => props.catType,
+  selectedCat,
   (value) => {
+    if (value === 'none') {
+      isCatPaused.value = false
+      return
+    }
+
     catGif.value = catMap[value] || catMap.walking_cat1
   },
   { immediate: true },
@@ -39,8 +48,10 @@ const handleMouseMove = (event) => {
 const animateCat = () => {
   const followSpeed = 0.002
 
-  catX += (mouseX - catX) * followSpeed
-  catY += (mouseY - catY) * followSpeed
+  if (!isCatPaused.value) {
+    catX += (mouseX - catX) * followSpeed
+    catY += (mouseY - catY) * followSpeed
+  }
 
   if (catRef.value) {
     const direction = mouseX < catX ? -1 : 1
@@ -69,12 +80,76 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="cat-background" aria-hidden="true">
+  <div class="cat-picker">
+    <label for="catSelect">고양이 선택</label>
+    <select id="catSelect" v-model="selectedCat">
+      <option v-for="option in catOptions" :key="option.value" :value="option.value">
+        {{ option.label }}
+      </option>
+    </select>
+    <button
+      class="cat-pause-btn"
+      type="button"
+      :disabled="selectedCat === 'none'"
+      @click="isCatPaused = !isCatPaused"
+    >
+      {{ isCatPaused ? '움직이기' : '멈추기' }}
+    </button>
+  </div>
+
+  <div v-if="selectedCat !== 'none'" class="cat-background" aria-hidden="true">
     <img ref="catRef" class="cursor-cat" :src="catGif" alt="" />
   </div>
 </template>
 
 <style scoped lang="scss">
+.cat-picker {
+  position: absolute;
+  top: 15px;
+  right: 18px;
+  z-index: 15;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 9px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 14px 28px rgba(8, 25, 40, 0.1);
+}
+
+.cat-picker label {
+  font-size: 12px;
+  color: #2d3d3b;
+  white-space: nowrap;
+}
+
+.cat-picker select {
+  width: 118px;
+  border: 1px solid rgba(84, 116, 107, 0.25);
+  border-radius: 10px;
+  padding: 0.45rem 0.55rem;
+  background: rgba(255, 255, 255, 0.95);
+  color: #1d3230;
+  font-size: 12px;
+}
+
+.cat-pause-btn {
+  border: 1px solid rgba(84, 116, 107, 0.25);
+  border-radius: 6px;
+  padding: 0.45rem 0.6rem;
+  background: #77a079;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.cat-pause-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
 .cat-background {
   position: fixed;
   inset: 0;

@@ -6,7 +6,6 @@ const props = defineProps({
   },
 })
 
-const { searchQuery } = props
 const emit = defineEmits(['update-query'])
 </script>
 
@@ -14,13 +13,13 @@ const emit = defineEmits(['update-query'])
   <section class="search-box">
     <h3>도시 검색</h3>
     <p>
-      검색 중인 도시: <strong>{{ searchQuery }}</strong>
+      검색 중인 도시: <strong>{{ props.searchQuery }}</strong>
     </p>
     <div class="input-wrapper with-icon">
       <font-awesome-icon class="search-icon" :icon="['fas', 'magnifying-glass']" />
       <input
         type="text"
-        :value="searchQuery"
+        :value="props.searchQuery"
         @input="(e) => emit('update-query', e.target.value)"
         placeholder="검색할 도시 이름 입력"
       />

@@ -45,9 +45,9 @@ const toggleMode = () => {
 }
 
 .theme-toggle {
-  position: absolute;
-  top: 30px;
-  right: 80px;
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
   z-index: 10;
   display: inline-flex;
   align-items: center;

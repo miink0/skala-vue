@@ -19,6 +19,14 @@ const isLoading = ref(false)
 const API_KEY = 'bb48a15a444ce90b130887562b8438e2'
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather'
 const WEATHER_ICON_URL = 'https://openweathermap.org/img/wn'
+const cities = [
+  { id: 'city_01', name: '서울', query: 'Seoul' },
+  { id: 'city_02', name: '수원', query: 'Suwon' },
+  { id: 'city_03', name: '부산', query: 'Busan' },
+  { id: 'city_04', name: '성남', query: 'Seongnam' },
+  { id: 'city_05', name: '대구', query: 'Daegu' },
+  { id: 'city_06', name: '제주', query: 'Jeju City' },
+]
 
 const mapWeatherResponse = (response, id, name) => {
   const weather = response.data.weather[0]
@@ -36,18 +44,18 @@ const mapWeatherResponse = (response, id, name) => {
 const fetchRealTimeWeather = async () => {
   isLoading.value = true
   try {
-    const [seoulRes, suwonRes, busanRes] = await Promise.all([
-      axios.get(`${BASE_URL}?q=Seoul&appid=${API_KEY}&units=metric&lang=kr`),
-      axios.get(`${BASE_URL}?q=Suwon&appid=${API_KEY}&units=metric&lang=kr`),
-      axios.get(`${BASE_URL}?q=Busan&appid=${API_KEY}&units=metric&lang=kr`),
-    ])
+    const responses = await Promise.all(
+      cities.map((city) =>
+        axios.get(`${BASE_URL}?q=${city.query}&appid=${API_KEY}&units=metric&lang=kr`),
+      ),
+    )
 
     // 기존 자식 컴포넌트(WeatherCard)가 요구하는 프로퍼티 규격에 맞춰 JSON 알맹이 맵핑
-    weatherList.value = [
-      mapWeatherResponse(seoulRes, 'city_01', '서울'),
-      mapWeatherResponse(suwonRes, 'city_02', '수원'),
-      mapWeatherResponse(busanRes, 'city_03', '부산'),
-    ]
+    weatherList.value = responses.map((response, index) => {
+      const city = cities[index]
+
+      return mapWeatherResponse(response, city.id, city.name)
+    })
     console.log('[API 통신 완료] 메인 대시보드 실시간 기상 장부 동기화:', weatherList.value)
   } catch (error) {
     console.error('날씨 API 연동 실패:', error)
@@ -99,7 +107,7 @@ const handleDetailJump = (id) => {
     <div class="status-bar">
       <template v-if="selectedCityName">
         <span class="selected-city">{{ selectedCityName }}</span>
-        <span class="status-item">이 선택되었습니다.</span>
+        <span class="status-item">이(가) 선택되었습니다.</span>
       </template>
       <template v-else>
         <span class="status-item">{{ selectedCityInfo }}</span>
