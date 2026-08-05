@@ -7,9 +7,7 @@ $accent: #77a079;
 $accent-dark: rgba(16, 27, 46, 0.88);
 $border-color: #e8f7ed;
 $input-border: #dbf0df;
-$hot-bg: #ffe4e4;
 $hot-text: #c0392b;
-$cool-bg: #eaebff;
 $cool-text: #273780;
 
 .app-container {
@@ -89,7 +87,7 @@ $cool-text: #273780;
   align-items: center;
   gap: 14px;
   border-radius: 14px;
-  padding: 16px 56px 16px 16px;
+  padding: 8px 56px 8px 16px;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
@@ -101,15 +99,8 @@ $cool-text: #273780;
 }
 
 .weather-icon {
-  width: 56px;
-  height: 56px;
-  flex: 0 0 56px;
-  object-fit: contain;
-}
-
-.card-content {
-  min-width: 0;
-  flex: 1;
+  width: 90px;
+  height: 90px;
 }
 
 .card-row {
@@ -119,7 +110,7 @@ $cool-text: #273780;
 }
 
 .card-row .city-name {
-  font-size: 18px;
+  font-size: 36px;
   font-weight: 600;
   color: $text-dark;
 }
@@ -130,27 +121,9 @@ $cool-text: #273780;
   color: $accent;
 }
 
-.meta {
-  margin-top: 8px;
-}
-
-.badge {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 6px 11px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 400;
-}
-
-.badge.hot {
-  background: $hot-bg;
-  color: $hot-text;
-}
-
-.badge.cool {
-  background: $cool-bg;
-  color: $cool-text;
+.card-row .temp-font {
+  font-size: 12px;
+  color: $text-soft;
 }
 
 .btn-detail {
@@ -205,11 +178,11 @@ $cool-text: #273780;
 .back-btn {
   margin-top: 20px;
   border: none;
-  border-radius: 18px;
+  border-radius: 10px;
   padding: 12px 18px;
   background: $accent;
   color: #ffffff;
-  cursor: pointer;
+  font-weight: 700;
   transition: background 0.2s ease;
 }
 
@@ -220,7 +193,6 @@ $cool-text: #273780;
 // 네비게이션 바
 .navigation-bar {
   display: flex;
-  // flex-wrap: wrap;
   align-items: center;
   gap: 12px;
   margin-bottom: 18px;

@@ -19,24 +19,59 @@ const displayTemp = computed(() => {
   }
   return rawTemp // 섭씨 그대로 반환
 })
+
+// 온도에 따라 아이콘과 라벨을 동적으로 계산
+const temperatureIcon = computed(() => {
+  const temp = props.item.temp
+  if (temp >= 30) {
+    return ['fas', 'temperature-full']
+  }
+  if (temp >= 20) {
+    return ['fas', 'temperature-three-quarters']
+  }
+  if (temp >= 10) {
+    return ['fas', 'temperature-half']
+  }
+  return ['fas', 'temperature-quarter']
+})
+
+// 온도 범위에 따라 라벨을 동적으로 계산
+const temperatureLabel = computed(() => {
+  const temp = props.item.temp
+  if (temp >= 30) {
+    return '30도 이상'
+  }
+  if (temp >= 20) {
+    return '20도 이상 30도 이하'
+  }
+  if (temp >= 10) {
+    return '10도 이상 20도 미만'
+  }
+  return '10도 미만'
+})
 </script>
 
 <template>
   <article class="weather-card" @click="emit('select-card', item.name)">
-    <img v-if="item.iconUrl" class="weather-icon" :src="item.iconUrl" :alt="item.iconAlt || item.status" />
+    <img
+      v-if="item.iconUrl"
+      class="weather-icon"
+      :src="item.iconUrl"
+      :alt="item.iconAlt || item.status"
+    />
 
     <div class="card-content">
       <div class="card-row">
         <div class="city-name">{{ item.name }}</div>
-        <div class="temp">{{ displayTemp }}{{ configStore.unitSymbol }}</div>
-      </div>
-
-      <div class="meta">
-        <span v-if="item.temp >= 25" class="badge hot">더움 (25도 이상)</span>
-        <span v-else class="badge cool">선선함 (25도 미만)</span>
+        <div class="temp-status">
+          <div class="temp">{{ displayTemp }}{{ configStore.unitSymbol }}</div>
+          <div class="temp-font">
+            {{ temperatureLabel }}
+            <font-awesome-icon :icon="temperatureIcon" class="temp-icon" style="color: #949494" />
+          </div>
+        </div>
       </div>
     </div>
-
     <button class="btn-detail" @click.stop="emit('click-detail', item.id)">상세보기</button>
   </article>
 </template>

@@ -36,7 +36,7 @@ onMounted(async () => {
       // 화면 템플릿 구조가 깨지지 않도록 오픈웨더 JSON 알맹이를 정확히 역매핑 유치
       cityData.value = {
         name: targetCity.korean,
-        temp: raw.main.temp, // 섭씨 온도 원본 기록
+        temp: raw.main.temp,
         status: raw.weather[0].description,
         humidity: `${raw.main.humidity}%`,
         wind: `${raw.wind.speed}m/s`,
@@ -51,12 +51,12 @@ onMounted(async () => {
 
 // 상세페이지에서도 화씨 <-> 섭씨 변환을 적용하기 위해 computed 사용
 const displayTemp = computed(() => {
-  if (!cityData.value) return 0
-  const rawTemp = cityData.value.temp // 원본 섭씨 온도
+  if (cityData.value == null) return 0
+  const rawTemp = cityData.value.temp
   if (configStore.unit === 'fahrenheit') {
-    return Math.round((rawTemp * 9) / 5 + 32) // 화씨 공식 적용
+    return Math.round((rawTemp * 9) / 5 + 32)
   }
-  return rawTemp // celsius 상태일 땐 원본 반환
+  return rawTemp
 })
 </script>
 
