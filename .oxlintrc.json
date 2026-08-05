@@ -4,7 +4,13 @@
   "env": {
     "browser": true
   },
-  "ignorePatterns": ["**/.vite/**", "**/node_modules/**", "**/dist/**", "**/dist-ssr/**", "**/coverage/**"],
+  "ignorePatterns": [
+    "**/.vite/**",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/dist-ssr/**",
+    "**/coverage/**"
+  ],
   "categories": {
     "correctness": "error"
   }
