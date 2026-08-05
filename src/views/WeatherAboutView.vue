@@ -14,9 +14,9 @@ const goHome = () => {
     <div class="about-container">
       <h2>날씨 프로젝트 소개</h2>
       <p>
-        이 프로젝트는 Vue.js와 Axios를 활용하여 OpenWeatherMap API의 실시간 날씨 정보를
-        제공하는 웹 애플리케이션입니다. 사용자는 여러 지역의 날씨 현황을 한눈에 확인하고,
-        상세 페이지에서 현재 날씨와 시간별 예보를 함께 조회할 수 있습니다.
+        이 프로젝트는 Vue.js와 Axios를 활용하여 OpenWeatherMap API의 실시간 날씨 정보를 제공하는 웹
+        애플리케이션입니다. 사용자는 여러 지역의 날씨 현황을 한눈에 확인하고, 상세 페이지에서 현재
+        날씨와 시간별 예보를 함께 조회할 수 있습니다.
       </p>
 
       <section class="about-section">
@@ -28,6 +28,7 @@ const goHome = () => {
           <li>OpenWeatherMap 예보 API를 활용한 3시간 간격 시간별 온도 표시</li>
           <li>섭씨와 화씨 단위 전환 기능</li>
           <li>상세 날씨 데이터 로컬 캐싱으로 빠른 재방문 화면 제공</li>
+          <li>Element Plus Skeleton을 활용한 날씨 데이터 로딩 화면 제공</li>
           <li>낮/밤 배경 테마 전환 기능</li>
           <li>움직이는 고양이 선택, 멈춤, 숨김 기능</li>
           <li>오늘 날짜와 현재 시간을 실시간으로 표시</li>
@@ -43,6 +44,7 @@ const goHome = () => {
           <li>Pinia를 활용한 날씨 단위 상태 관리</li>
           <li>Axios를 활용한 OpenWeatherMap API 연동</li>
           <li>localStorage를 활용한 상세 날씨 캐싱</li>
+          <li>Element Plus 컴포넌트를 활용한 로딩 UI 구성</li>
           <li>SCSS 기반 컴포넌트 스타일링</li>
         </ul>
       </section>
@@ -50,7 +52,7 @@ const goHome = () => {
       <button @click="goHome" class="back-btn">메인 대시보드로 돌아가기</button>
     </div>
   </BaseDashboardCard>
-</template> 
+</template>
 
 <style lang="scss">
 @use '@/assets/weather.scss';

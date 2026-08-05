@@ -1,11 +1,13 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
+// ref: 선택된 동물, 멈춤 여부, 이미지 DOM 참조를 반응형으로 관리
 const selectedCat = ref('walking_cat1')
 const isCatPaused = ref(false)
 const catRef = ref(null)
 const catGif = ref(new URL('../assets/walking_cat1.gif', import.meta.url).href)
 
+// select 옵션용 동물 목록, v-for 렌더링 데이터로 사용
 const catOptions = [
   { value: 'walking_cat1', label: '검은 고양이' },
   { value: 'walking_cat3', label: '무지개 고양이' },
@@ -19,6 +21,7 @@ const catMap = {
   walking_cat3: new URL('../assets/walking_cat3.gif', import.meta.url).href,
 }
 
+// watch: selectedCat 변경 시 표시할 gif 이미지 교체
 watch(
   selectedCat,
   (value) => {
@@ -40,6 +43,7 @@ let catY = mouseY
 
 let animationFrameId = null
 
+// 마우스 좌표 저장 후 requestAnimationFrame으로 동물 이동 처리
 const handleMouseMove = (event) => {
   mouseX = event.clientX
   mouseY = event.clientY
@@ -65,11 +69,13 @@ const animateCat = () => {
   animationFrameId = requestAnimationFrame(animateCat)
 }
 
+// onMounted: DOM 준비 후 마우스 이벤트와 애니메이션 루프 시작
 onMounted(() => {
   window.addEventListener('mousemove', handleMouseMove)
   animationFrameId = requestAnimationFrame(animateCat)
 })
 
+// onBeforeUnmount: 화면 이탈 시 이벤트와 애니메이션 정리
 onBeforeUnmount(() => {
   window.removeEventListener('mousemove', handleMouseMove)
 
@@ -82,11 +88,13 @@ onBeforeUnmount(() => {
 <template>
   <div class="cat-picker">
     <label for="catSelect">고양이 선택</label>
+    <!-- v-model: select 값과 selectedCat 상태를 양방향 연결 -->
     <select id="catSelect" v-model="selectedCat">
       <option v-for="option in catOptions" :key="option.value" :value="option.value">
         {{ option.label }}
       </option>
     </select>
+    <!-- @click: 버튼 클릭 시 멈춤 상태 true/false 토글 -->
     <button
       class="cat-pause-btn"
       type="button"
@@ -97,6 +105,7 @@ onBeforeUnmount(() => {
     </button>
   </div>
 
+  <!-- v-if: 동물 없음을 선택하면 img 렌더링 제외 -->
   <div v-if="selectedCat !== 'none'" class="cat-background" aria-hidden="true">
     <img ref="catRef" class="cursor-cat" :src="catGif" alt="" />
   </div>

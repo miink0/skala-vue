@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useConfigStore } from '@/stores/configStore'
 
+// defineProps: 부모(WeatherHomeView)가 넘긴 도시별 날씨 객체 수신
 const props = defineProps({
   item: {
     type: Object,
@@ -9,20 +10,23 @@ const props = defineProps({
   },
 })
 
+// defineEmits: 카드 선택과 상세보기 클릭을 부모 컴포넌트로 전달
 const emit = defineEmits(['select-card', 'click-detail'])
 
 const configStore = useConfigStore()
+
+// computed: Pinia 단위 상태 변경 시 카드 온도 표시 재계산
 const displayTemp = computed(() => {
-  const rawTemp = props.item.temp
+  const { temp: rawTemp } = props.item
   if (configStore.unit === 'fahrenheit') {
     return Math.round((rawTemp * 9) / 5 + 32) // 섭씨를 화씨로 변환
   }
-  return rawTemp // 섭씨 그대로 반환
+  return rawTemp // 섭씨 값 그대로 사용
 })
 
-// 온도에 따라 아이콘과 라벨을 동적으로 계산
+// 온도 기준 아이콘 계산
 const temperatureIcon = computed(() => {
-  const temp = props.item.temp
+  const { temp } = props.item
   if (temp >= 30) {
     return ['fas', 'temperature-full']
   }
@@ -35,9 +39,9 @@ const temperatureIcon = computed(() => {
   return ['fas', 'temperature-quarter']
 })
 
-// 온도 범위에 따라 라벨을 동적으로 계산
+// 온도 범위 기준 라벨 계산
 const temperatureLabel = computed(() => {
-  const temp = props.item.temp
+  const { temp } = props.item
   if (temp >= 30) {
     return '30도 이상'
   }
@@ -52,6 +56,7 @@ const temperatureLabel = computed(() => {
 </script>
 
 <template>
+  <!-- @click: 카드 클릭 시 선택된 도시명을 부모로 전달 -->
   <article class="weather-card" @click="emit('select-card', item.name)">
     <img
       v-if="item.iconUrl"
@@ -72,6 +77,7 @@ const temperatureLabel = computed(() => {
         </div>
       </div>
     </div>
+    <!-- @click.stop: 상세보기 클릭의 카드 선택 이벤트 전파 방지 -->
     <button class="btn-detail" @click.stop="emit('click-detail', item.id)">상세보기</button>
   </article>
 </template>

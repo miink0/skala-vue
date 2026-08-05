@@ -17,11 +17,15 @@ import { ref, computed } from 'vue'
 const dayBackground = new URL('../assets/day_picture.png', import.meta.url).href
 const nightBackground = new URL('../assets/night_picture.png', import.meta.url).href
 
+// ref: 현재 배경 모드(day/night)를 반응형 상태로 관리
 const mode = ref('day')
+
+// computed: mode 변경 시 배경 이미지 style 객체 재계산
 const backgroundStyle = computed(() => ({
   backgroundImage: `url(${mode.value === 'day' ? dayBackground : nightBackground})`,
 }))
 
+// 이벤트 핸들러: 버튼 클릭 시 낮/밤 모드 토글
 const toggleMode = () => {
   mode.value = mode.value === 'day' ? 'night' : 'day'
 }

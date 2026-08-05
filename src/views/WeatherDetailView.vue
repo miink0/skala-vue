@@ -9,16 +9,17 @@ const route = useRoute()
 const router = useRouter()
 const configStore = useConfigStore()
 
+// ref: 상세 날씨, 시간별 예보, 로딩/에러 상태를 반응형으로 관리
 const cityData = ref(null)
 const hourlyForecast = ref([])
 const isLoading = ref(false)
 const errorMessage = ref('')
 
-const API_KEY = '8964edc63b366d27b5b728b7976570b7'
+const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY
 const WEATHER_URL = 'https://api.openweathermap.org/data/2.5/weather'
 const FORECAST_URL = 'https://api.openweathermap.org/data/2.5/forecast'
 
-// 라우터 ID 파라미터를 실제 OpenWeatherMap 쿼리용 영문 명칭과 한글 명칭으로 매핑하는 사전 장부
+// cityId 매핑: 라우터 파라미터를 OpenWeatherMap 쿼리명과 한글 지역명으로 변환
 const cityMapping = {
   city_01: { english: 'Seoul', korean: '대한민국 서울특별시' },
   city_02: { english: 'Suwon', korean: '경기도 수원시 영통구' },
@@ -28,6 +29,7 @@ const cityMapping = {
   city_06: { english: 'Jeju City', korean: '제주특별자치도 제주시' },
 }
 
+// onMounted: 상세 페이지 진입 시 URL 파라미터(cityId) 기반 API 요청 시작
 onMounted(async () => {
   const id = route.params.cityId
   const targetCity = cityMapping[id]
@@ -36,26 +38,41 @@ onMounted(async () => {
     isLoading.value = true
     errorMessage.value = ''
     try {
+      if (!API_KEY) {
+        throw new Error('VITE_OPENWEATHER_API_KEY 환경변수 누락')
+      }
+
+      // Promise.all: 현재 날씨와 시간별 예보 동시 요청으로 대기 시간 감소
       const [weatherResponse, forecastResponse] = await Promise.all([
         axios.get(`${WEATHER_URL}?q=${targetCity.english}&appid=${API_KEY}&units=metric&lang=kr`),
         axios.get(`${FORECAST_URL}?q=${targetCity.english}&appid=${API_KEY}&units=metric&lang=kr`),
       ])
 
-      const raw = weatherResponse.data
-      // 화면 템플릿 구조가 깨지지 않도록 오픈웨더 JSON 알맹이를 정확히 역매핑 유치
+      const {
+        main: { temp, humidity },
+        weather: [currentWeather = {}] = [],
+        wind: { speed },
+      } = weatherResponse.data
+      // API 응답 중 화면에 필요한 값만 템플릿용 객체로 변환
       cityData.value = {
         name: targetCity.korean,
-        temp: raw.main.temp,
-        status: raw.weather[0].description,
-        humidity: `${raw.main.humidity}%`,
-        wind: `${raw.wind.speed}m/s`,
+        temp,
+        status: currentWeather.description ?? '날씨 정보 없음',
+        humidity: `${humidity}%`,
+        wind: `${speed}m/s`,
       }
 
+      // forecast API의 3시간 간격 데이터 중 앞 8개를 시간별 카드로 사용
       hourlyForecast.value = forecastResponse.data.list.slice(0, 8).map((item) => {
-        const forecastDate = new Date(item.dt * 1000)
+        const {
+          dt,
+          main: { temp },
+          weather: [weather = {}] = [],
+        } = item
+        const forecastDate = new Date(dt * 1000)
 
         return {
-          id: item.dt,
+          id: dt,
           time: forecastDate.toLocaleTimeString('ko-KR', {
             hour: '2-digit',
             minute: '2-digit',
@@ -64,9 +81,9 @@ onMounted(async () => {
             month: 'short',
             day: 'numeric',
           }),
-          temp: item.main.temp,
-          status: item.weather[0].description,
-          iconUrl: `https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`,
+          temp,
+          status: weather.description ?? '날씨 정보 없음',
+          iconUrl: weather.icon ? `https://openweathermap.org/img/wn/${weather.icon}@2x.png` : '',
         }
       })
     } catch (error) {
@@ -80,23 +97,24 @@ onMounted(async () => {
   }
 })
 
-// 상세페이지에서도 화씨 <-> 섭씨 변환을 적용하기 위해 computed 사용
+// computed: Pinia 단위 상태 변경 시 상세 현재 온도 표시 재계산
 const displayTemp = computed(() => {
   if (cityData.value == null) return 0
-  const rawTemp = cityData.value.temp
+  const { temp: rawTemp } = cityData.value
   if (configStore.unit === 'fahrenheit') {
     return Math.round((rawTemp * 9) / 5 + 32)
   }
   return rawTemp
 })
 
+// computed: 시간별 예보 배열에 섭씨/화씨 변환을 적용한 표시용 데이터 생성
 const displayHourlyForecast = computed(() => {
-  return hourlyForecast.value.map((item) => {
-    const convertedTemp =
-      configStore.unit === 'fahrenheit' ? Math.round((item.temp * 9) / 5 + 32) : item.temp
+  return hourlyForecast.value.map(({ temp, ...forecastItem }) => {
+    const convertedTemp = configStore.unit === 'fahrenheit' ? Math.round((temp * 9) / 5 + 32) : temp
 
     return {
-      ...item,
+      ...forecastItem,
+      temp,
       displayTemp: Math.round(convertedTemp),
     }
   })
@@ -114,10 +132,48 @@ const displayHourlyForecast = computed(() => {
         <button @click="router.push('/')" class="back-btn">메인으로</button>
       </div>
 
-      <div v-if="isLoading" class="detail-state">
-        <p>날씨 정보를 불러오는 중입니다.</p>
-      </div>
+      <!-- Element Plus el-skeleton: 상세 날씨 응답 전 실제 레이아웃과 비슷한 로딩 UI 표시 -->
+      <el-skeleton v-if="isLoading" class="detail-loading-skeleton" animated>
+        <template #template>
+          <section class="current-weather skeleton-current-weather">
+            <div class="skeleton-current-info">
+              <el-skeleton-item variant="text" class="skeleton-label" />
+              <el-skeleton-item variant="h3" class="skeleton-title" />
+              <el-skeleton-item variant="text" class="skeleton-status" />
+            </div>
+            <el-skeleton-item variant="text" class="skeleton-current-temp" />
+          </section>
 
+          <section class="weather-metrics">
+            <div class="metric-card">
+              <el-skeleton-item variant="text" class="skeleton-label" />
+              <el-skeleton-item variant="h3" class="skeleton-metric-value" />
+            </div>
+            <div class="metric-card">
+              <el-skeleton-item variant="text" class="skeleton-label" />
+              <el-skeleton-item variant="h3" class="skeleton-metric-value" />
+            </div>
+          </section>
+
+          <section class="hourly-section">
+            <div class="section-title">
+              <el-skeleton-item variant="h3" class="skeleton-section-title" />
+              <el-skeleton-item variant="text" class="skeleton-section-subtitle" />
+            </div>
+            <div class="hourly-list">
+              <article v-for="index in 8" :key="index" class="hourly-card">
+                <el-skeleton-item variant="text" class="skeleton-hourly-date" />
+                <el-skeleton-item variant="h3" class="skeleton-hourly-time" />
+                <el-skeleton-item variant="circle" class="skeleton-hourly-icon" />
+                <el-skeleton-item variant="text" class="skeleton-hourly-temp" />
+                <el-skeleton-item variant="text" class="skeleton-hourly-status" />
+              </article>
+            </div>
+          </section>
+        </template>
+      </el-skeleton>
+
+      <!-- v-else-if: API 데이터가 있을 때만 상세 날씨 영역 렌더링 -->
       <div v-else-if="cityData" class="detail-content">
         <section class="current-weather">
           <div>
@@ -148,6 +204,7 @@ const displayHourlyForecast = computed(() => {
           </div>
 
           <div class="hourly-list">
+            <!-- v-for: 시간별 예보 배열을 카드 목록으로 반복 출력 -->
             <article v-for="item in displayHourlyForecast" :key="item.id" class="hourly-card">
               <span class="hourly-date">{{ item.date }}</span>
               <strong class="hourly-time">{{ item.time }}</strong>
@@ -195,6 +252,68 @@ const displayHourlyForecast = computed(() => {
 .detail-content {
   display: grid;
   gap: 16px;
+}
+
+.detail-loading-skeleton {
+  display: grid;
+  gap: 16px;
+}
+
+.skeleton-current-weather {
+  min-height: 142px;
+}
+
+.skeleton-current-info {
+  display: grid;
+  gap: 10px;
+  width: min(100%, 340px);
+}
+
+.skeleton-label {
+  width: 56px;
+}
+
+.skeleton-title {
+  width: min(100%, 260px);
+}
+
+.skeleton-status {
+  width: 140px;
+}
+
+.skeleton-current-temp {
+  width: 120px;
+  height: 54px;
+}
+
+.skeleton-metric-value {
+  width: 92px;
+}
+
+.skeleton-section-title {
+  width: 120px;
+}
+
+.skeleton-section-subtitle {
+  width: 110px;
+}
+
+.skeleton-hourly-date,
+.skeleton-hourly-status {
+  width: 62px;
+}
+
+.skeleton-hourly-time {
+  width: 72px;
+}
+
+.skeleton-hourly-icon {
+  width: 56px;
+  height: 56px;
+}
+
+.skeleton-hourly-temp {
+  width: 54px;
 }
 
 .current-weather {
