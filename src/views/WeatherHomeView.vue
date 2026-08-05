@@ -5,15 +5,15 @@ import axios from 'axios'
 
 import SearchBar from '@/components/SearchBar.vue'
 import WeatherCard from '@/components/WeatherCard.vue'
+import { useFavoriteStore } from '@/stores/favoriteStore'
 
 const router = useRouter()
 const route = useRoute()
+const favoriteStore = useFavoriteStore()
 
 // ref: API 결과, 검색어, 선택 상태처럼 화면에서 바뀌는 값을 반응형으로 관리
 const weatherList = ref([])
 const searchQuery = ref('')
-const selectedCityName = ref('')
-const selectedCityInfo = ref('카드를 클릭하거나 검색해 보세요.')
 const isLoading = ref(false)
 
 // OpenWeatherMap API 연동
@@ -95,6 +95,15 @@ const filteredWeatherList = computed(() => {
   return weatherList.value.filter(({ name }) => name.includes(query))
 })
 
+// computed: Pinia 즐겨찾기 id 목록 기준 즐겨찾기 도시 카드만 계산
+const favoriteWeatherList = computed(() => {
+  return weatherList.value.filter(({ id }) => favoriteStore.isFavorite(id))
+})
+
+const handleFavoriteToggle = (id) => {
+  favoriteStore.toggleFavorite(id)
+}
+
 // router.push: 상세보기 버튼 클릭 시 동적 라우트(/weather/:cityId)로 이동
 const handleDetailJump = (id) => {
   router.push(`/weather/${id}`)
@@ -105,6 +114,25 @@ const handleDetailJump = (id) => {
   <div class="dashboard-wrapper">
     <!-- props + emit: 검색어 전달, 변경 이벤트 수신으로 searchQuery 갱신 -->
     <SearchBar :searchQuery="searchQuery" @update-query="(value) => (searchQuery = value)" />
+
+    <section v-if="favoriteStore.favoriteCount > 0" class="favorite-box">
+      <div class="favorite-header">
+        <h3>즐겨찾기 지역</h3>
+        <span>{{ favoriteStore.favoriteCount }}개</span>
+      </div>
+      <div class="favorite-list">
+        <button
+          v-for="item in favoriteWeatherList"
+          :key="item.id"
+          class="favorite-chip"
+          type="button"
+          @click="handleDetailJump(item.id)"
+        >
+          <span>{{ item.name }}</span>
+          <strong>{{ Math.round(item.temp) }}℃</strong>
+        </button>
+      </div>
+    </section>
 
     <section class="list-box">
       <h3>지역별 날씨 현황</h3>
@@ -118,7 +146,6 @@ const handleDetailJump = (id) => {
                 <el-skeleton-item variant="h3" class="skeleton-city-name" />
                 <el-skeleton-item variant="text" class="skeleton-weather-text" />
               </div>
-              <el-skeleton-item variant="button" class="skeleton-detail-button" />
             </div>
           </template>
         </el-skeleton>
@@ -129,21 +156,14 @@ const handleDetailJump = (id) => {
           v-for="item in filteredWeatherList"
           :key="item.id"
           :item="item"
-          @select-card="(name) => (selectedCityName = name)"
           @click-detail="handleDetailJump(item.id)"
+          @toggle-favorite="handleFavoriteToggle"
         />
       </div>
     </section>
 
     <div class="status-bar">
-      <!-- v-if/v-else: 카드 선택 여부에 따른 문구 분기 -->
-      <template v-if="selectedCityName">
-        <span class="selected-city">{{ selectedCityName }}</span>
-        <span class="status-item">이(가) 선택되었습니다.</span>
-      </template>
-      <template v-else>
-        <span class="status-item">{{ selectedCityInfo }}</span>
-      </template>
+      <span class="status-item">카드를 클릭하면 상세 날씨를 확인할 수 있습니다.</span>
     </div>
   </div>
 </template>
@@ -182,19 +202,9 @@ const handleDetailJump = (id) => {
   width: 180px;
 }
 
-.skeleton-detail-button {
-  width: 82px;
-  height: 34px;
-  flex: 0 0 82px;
-}
-
 @media (max-width: 640px) {
   .skeleton-card-row {
     align-items: flex-start;
-  }
-
-  .skeleton-detail-button {
-    display: none;
   }
 }
 </style>

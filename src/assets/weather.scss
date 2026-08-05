@@ -7,8 +7,6 @@ $accent: #77a079;
 $accent-dark: rgba(16, 27, 46, 0.88);
 $border-color: #e8f7ed;
 $input-border: #dbf0df;
-$hot-text: #c0392b;
-$cool-text: #273780;
 
 .app-container {
   width: 100%;
@@ -35,6 +33,7 @@ $cool-text: #273780;
 }
 
 .search-box,
+.favorite-box,
 .list-box,
 .status-bar {
   background: $panel-bg;
@@ -44,10 +43,51 @@ $cool-text: #273780;
 }
 
 .search-box h3,
+.favorite-box h3,
 .list-box h3 {
   margin: 0 0 8px;
   color: $text-dark;
   font-weight: 600;
+}
+
+.favorite-box {
+  display: grid;
+  gap: 12px;
+}
+
+.favorite-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.favorite-header span {
+  color: $accent;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.favorite-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.favorite-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  padding: 8px 11px;
+  background: rgba(119, 160, 121, 0.1);
+  color: $text-dark;
+  font-weight: 700;
+}
+
+.favorite-chip strong {
+  color: $accent;
 }
 
 .search-box p {
@@ -87,7 +127,8 @@ $cool-text: #273780;
   align-items: center;
   gap: 14px;
   border-radius: 14px;
-  padding: 8px 56px 8px 16px;
+  padding: 12px 76px 12px 16px;
+  cursor: pointer;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
@@ -126,21 +167,33 @@ $cool-text: #273780;
   color: $text-soft;
 }
 
-.btn-detail {
+.btn-favorite {
   position: absolute;
-  top: 15px;
-  right: 15px;
-  border: 0;
-  border-radius: 10px;
-  padding: 9px 15px;
-  background: $accent;
-  color: #ffffff;
-  transition: background 0.2s ease;
+  top: 50%;
+  right: 22px;
   z-index: 2;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  transform: translateY(-50%);
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
 }
 
-.btn-detail:hover {
-  background: $accent-dark;
+.btn-favorite:hover {
+  transform: translateY(-50%) scale(1.08);
+}
+
+.btn-favorite.active {
+  filter: drop-shadow(0 3px 5px rgba(255, 23, 23, 0.24));
+}
+
+.favorite-heart-img {
+  display: block;
+  width: 34px;
+  height: auto;
+  image-rendering: pixelated;
 }
 
 .status-bar {
@@ -151,28 +204,6 @@ $cool-text: #273780;
   font-weight: 600;
   color: $text-muted;
   background: #ffffff;
-}
-
-.status-bar .selected-city {
-  font-weight: 700;
-  color: #203739;
-  padding: 6px 10px;
-  border-radius: 8px;
-  margin-left: 15px;
-  background: rgba(188, 209, 193, 0.16);
-}
-
-.view-panel {
-  background: $panel-bg;
-  border-radius: 24px;
-  box-shadow: 0 12px 30px $panel-shadow;
-  padding: 28px;
-}
-
-.view-panel .search-box,
-.view-panel .list-box,
-.view-panel .status-bar {
-  background: $panel-bg;
 }
 
 .back-btn {

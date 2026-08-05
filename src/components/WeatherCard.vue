@@ -1,6 +1,9 @@
 <script setup>
 import { computed } from 'vue'
 import { useConfigStore } from '@/stores/configStore'
+import { useFavoriteStore } from '@/stores/favoriteStore'
+import heartEmptyUrl from '@/assets/pixel_empty_heart.png'
+import heartFullUrl from '@/assets/pixel_full_heart.png'
 
 // defineProps: 부모(WeatherHomeView)가 넘긴 도시별 날씨 객체 수신
 const props = defineProps({
@@ -10,10 +13,15 @@ const props = defineProps({
   },
 })
 
-// defineEmits: 카드 선택과 상세보기 클릭을 부모 컴포넌트로 전달
-const emit = defineEmits(['select-card', 'click-detail'])
+// defineEmits: 카드 클릭 상세 이동, 즐겨찾기 클릭을 부모 컴포넌트로 전달
+const emit = defineEmits(['click-detail', 'toggle-favorite'])
 
 const configStore = useConfigStore()
+const favoriteStore = useFavoriteStore()
+
+// computed: Pinia 즐겨찾기 상태 기준 별 버튼 활성 여부 계산
+const isFavorite = computed(() => favoriteStore.isFavorite(props.item.id))
+const favoriteHeartUrl = computed(() => (isFavorite.value ? heartFullUrl : heartEmptyUrl))
 
 // computed: Pinia 단위 상태 변경 시 카드 온도 표시 재계산
 const displayTemp = computed(() => {
@@ -56,8 +64,8 @@ const temperatureLabel = computed(() => {
 </script>
 
 <template>
-  <!-- @click: 카드 클릭 시 선택된 도시명을 부모로 전달 -->
-  <article class="weather-card" @click="emit('select-card', item.name)">
+  <!-- @click: 카드 클릭 시 상세 페이지 이동 이벤트 전달 -->
+  <article class="weather-card" @click="emit('click-detail', item.id)">
     <img
       v-if="item.iconUrl"
       class="weather-icon"
@@ -77,7 +85,14 @@ const temperatureLabel = computed(() => {
         </div>
       </div>
     </div>
-    <!-- @click.stop: 상세보기 클릭의 카드 선택 이벤트 전파 방지 -->
-    <button class="btn-detail" @click.stop="emit('click-detail', item.id)">상세보기</button>
+    <button
+      class="btn-favorite"
+      type="button"
+      :class="{ active: isFavorite }"
+      :aria-label="`${item.name} 즐겨찾기 ${isFavorite ? '해제' : '추가'}`"
+      @click.stop="emit('toggle-favorite', item.id)"
+    >
+      <img class="favorite-heart-img" :src="favoriteHeartUrl" alt="" />
+    </button>
   </article>
 </template>

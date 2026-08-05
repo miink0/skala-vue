@@ -24,6 +24,8 @@ const goHome = () => {
         <ul>
           <li>서울, 수원, 부산, 성남, 대구, 제주 지역별 날씨 현황 조회</li>
           <li>검색 기능을 통한 특정 지역 날씨 확인</li>
+          <li>하트 버튼을 활용한 관심 지역 즐겨찾기 추가 및 해제</li>
+          <li>Pinia 전역 상태와 localStorage를 활용한 즐겨찾기 유지</li>
           <li>상세 페이지에서 현재 온도, 날씨 상태, 습도, 풍속 제공</li>
           <li>OpenWeatherMap 예보 API를 활용한 3시간 간격 시간별 온도 표시</li>
           <li>섭씨와 화씨 단위 전환 기능</li>
@@ -41,7 +43,7 @@ const goHome = () => {
         <ul>
           <li>Vue.js Composition API</li>
           <li>Vue Router를 활용한 페이지 이동</li>
-          <li>Pinia를 활용한 날씨 단위 상태 관리</li>
+          <li>Pinia를 활용한 날씨 단위와 즐겨찾기 상태 관리</li>
           <li>Axios를 활용한 OpenWeatherMap API 연동</li>
           <li>localStorage를 활용한 상세 날씨 캐싱</li>
           <li>Element Plus 컴포넌트를 활용한 로딩 UI 구성</li>
