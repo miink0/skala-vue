@@ -63,4 +63,24 @@ npm run lint
 
 ## 4일간 어려웠던 점과 해결 과정
 
-OpenWeatherMap에서 현재날씨의 최저온도(main.temp_min)와 최고온도(main.temp_max)가 현재온도와 같다고 응답이 왔습니다. 따라서, 더 찾아본 결과, 무료버전은 3시간마다의 정보를 제공해준다고 하여, 3시간 마다의 온도를 가져오
+다음은 프로젝트 작업 중 4일간 겪었던 주요 문제들과 각각의 해결 과정입니다.
+
+- 런타임 에러 (컴포넌트 렌더링 중 중단)
+  - 문제: 앱이 초기 로드 시 브라우저 콘솔에 TypeError로 멈춤. 원인은 `WeatherCard`가 받아야 할 prop(예: city.name)을 안전하게 검사하지 않아 undefined에 접근한 것.
+  - 해결: `WeatherCard`와 관련 뷰에서 props, API 응답을 방어적으로 처리하도록 수정하여 null/undefined 체크를 추가함. 또한 `App.vue`와 라우터 구성이 올바른지 검증하여 렌더링 경로를 정리함.
+
+- 라우터·네비게이션
+  - 문제: 상세 페이지에서 잘못된 리다이렉트/경로 처리로 인해 뒤로가기나 링크 이동 시 비정상 동작 발생.
+  - 해결: `src/router`와 상세뷰의 리다이렉트 로직을 점검해 잘못된 경로(`/weather` 등)를 기본 루트(`/`)로 정정하고, `RouterView` 내부 렌더 흐름을 안정화함.
+
+- OpenWeatherMap의 온도 표기와 상세 UI
+  - 문제: OpenWeatherMap의 응답에서 `temp_min`/`temp_max`가 예상과 달리 보일 때가 있었고, iPhone 스타일의 최소/최대 온도 진행바(progress)를 만들고 싶었음.
+  - 해결: 상세 API 응답의 `raw.main.temp_min` / `raw.main.temp_max` 값을 직접 사용해 `tempMin`/`tempMax`로 보관하고, 섭씨/화씨 변환 로직을 `configStore`(Pinia)와 연동하여 `displayMinTemp`/`displayMaxTemp`를 계산함. 이 값을 기반으로 `progressPercent`를 계산해 수평 바와 현재 온도 점을 렌더링하도록 `WeatherDetailView.vue`를 구현함.
+
+- UI 애니메이션/에셋 및 전역 커서/고양이 선택
+  - 문제: 배경 고양이 GIF가 표시되지 않거나 다른 레이어에 가려짐, 커서 이미지 파일명 혼선, 그리고 사용자가 고양이 타입을 바꿀 수 있는 UI가 필요했음.
+  - 해결: 에셋을 Vite 방식(`new URL(..., import.meta.url)`)으로 로드하도록 수정하고 파일명(`pixcel_butterfly.png`, `walking_cat1.gif` 등)을 정리함. `CatBackground`/`CatMove` 컴포넌트를 분리해 역할을 명확히 하고, `App.vue` 우측 상단에 `cat-picker` UI를 추가해 `CatMove`로 선택값을 prop으로 전달하도록 구성함. 또한 고양이가 커서를 따라오고 좌우가 뒤집히도록 transform 처리해 자연스러운 움직임을 구현함.
+
+- 린트(lint) 에러가 의존성(deps) 내부에서 대량 발생
+  - 문제: `npm run lint` 실행 시 `.vite` 번들 캐시와 `node_modules` 내부 파일을 검사해서 외부 라이브러리 코드에서 수백 건의 규칙 위반이 보고됨(실제 프로젝트 코드 오류와 혼동).
+  - 해결: `eslint.config.js`와 `.oxlintrc.json`에 `ignorePatterns` / `globalIgnores`를 추가하여 `**/.vite/**`, `**/node_modules/**`, `**/dist/**` 등을 무시하도록 설정함. 그 결과 lint 검사는 프로젝트 소스만 대상으로 동작하도록 정리되었음.
